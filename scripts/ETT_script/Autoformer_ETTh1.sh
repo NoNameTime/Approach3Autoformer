@@ -62,7 +62,7 @@
 
 python -u run.py \
   --is_training 1 \
-  --root_path ./dataset/ETT-small/ \
+  --root_path ./ETDataset/ETT-small/ \
   --data_path modified_single_mtau.csv \
   --model_id ETTh1_96_336 \
   --model Autoformer \
