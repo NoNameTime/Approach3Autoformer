@@ -7,6 +7,8 @@ import torch.nn.functional as F
 
 import math
 
+CHANNEL_NUMBER=7
+
 class RotaryPositionalEmbedding(nn.Module):
     """
     Fixed (non-learnable) Rotary Positional Embedding (ROPE).
@@ -231,8 +233,8 @@ class RotaryChannelEmbeddingLearnable(nn.Module):
         batch, seq_len, d_model = x.size()
         # Get fixed sin and cos embeddings for the current sequence length.
         # Original shape: (seq_len, d_model/2) -> expand to (1, seq_len, d_model/2)
-        sin_embed = self.sin_embed[:7, :].unsqueeze(0)
-        cos_embed = self.cos_embed[:7, :].unsqueeze(0)
+        sin_embed = self.sin_embed[:CHANNEL_NUMBER, :].unsqueeze(0)
+        cos_embed = self.cos_embed[:CHANNEL_NUMBER, :].unsqueeze(0)
         
         # Instead of doing separate 2D operations, we simply expand them to full d_model.
         # This creates tensors of shape (1, seq_len, d_model) where the embedding for each
@@ -240,8 +242,8 @@ class RotaryChannelEmbeddingLearnable(nn.Module):
         sin_embed = torch.repeat_interleave(sin_embed, repeats=2, dim=-1)
         cos_embed = torch.repeat_interleave(cos_embed, repeats=2, dim=-1)
 
-        sin_embed = sin_embed.repeat(1, int(seq_len/7), 1)
-        cos_embed = cos_embed.repeat(1, int(seq_len/7), 1)
+        sin_embed = sin_embed.repeat(1, int(seq_len/CHANNEL_NUMBER), 1)
+        cos_embed = cos_embed.repeat(1, int(seq_len/CHANNEL_NUMBER), 1)
         
         #sin_embed = F.pad(sin_embed, (0, 0, 1, 1))
         #cos_embed = F.pad(cos_embed, (0, 0, 1, 1))
@@ -319,8 +321,8 @@ class RotaryChannelEmbeddingFixed(nn.Module):
         batch, seq_len, d_model = x.size()
         # Get fixed sin and cos embeddings for the current sequence length.
         # Original shape: (seq_len, d_model/2) -> expand to (1, seq_len, d_model/2)
-        sin_embed = self.sin_embed[:7, :].unsqueeze(0)
-        cos_embed = self.cos_embed[:7, :].unsqueeze(0)
+        sin_embed = self.sin_embed[:CHANNEL_NUMBER, :].unsqueeze(0)
+        cos_embed = self.cos_embed[:CHANNEL_NUMBER, :].unsqueeze(0)
         
         # Instead of doing separate 2D operations, we simply expand them to full d_model.
         # This creates tensors of shape (1, seq_len, d_model) where the embedding for each
@@ -328,8 +330,8 @@ class RotaryChannelEmbeddingFixed(nn.Module):
         sin_embed = torch.repeat_interleave(sin_embed, repeats=2, dim=-1)
         cos_embed = torch.repeat_interleave(cos_embed, repeats=2, dim=-1)
 
-        sin_embed = sin_embed.repeat(1, int(seq_len/7), 1)
-        cos_embed = cos_embed.repeat(1, int(seq_len/7), 1)
+        sin_embed = sin_embed.repeat(1, int(seq_len/CHANNEL_NUMBER), 1)
+        cos_embed = cos_embed.repeat(1, int(seq_len/CHANNEL_NUMBER), 1)
 
         #sin_embed = F.pad(sin_embed, (0, 0, 1, 1))
         #cos_embed = F.pad(cos_embed, (0, 0, 1, 1))
